@@ -13,15 +13,15 @@ export default function ListTodo() {
 
   useEffect(() => {
     setLoadinga(true);
-    let unsubscribe;
+    // let unsubscribe;
     if(todoActivo){
-      unsubscribe = getListTodoWithWhere(false, (setListTodoActivos));
+      getListTodoWithWhere(false, (setListTodoActivos));
       setLoadinga(false);
     }else{
-      unsubscribe = getListTodoWithWhere(true, (setListTodoDesactivados));
+      getListTodoWithWhere(true, (setListTodoDesactivados));
       setLoadinga(false);
     }
-    return () => unsubscribe && unsubscribe();
+    // return () => unsubscribe && unsubscribe();
   }, [todoActivo]);
 
   return (

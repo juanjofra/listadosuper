@@ -7,8 +7,7 @@ export function update(id, odjeto) {
 
 export const getListTodoWithWhere = (condition, callback) => {
   return db.collection('todo')
-  .where('delete','==',condition)
-  .limit(10).orderBy('status')
+  .where('delete','==',condition).orderBy('status')
   .onSnapshot(snap => {
    const todos = snap.docs.map(doc => {
       const data = doc.data();
