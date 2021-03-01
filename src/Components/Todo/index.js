@@ -1,18 +1,19 @@
-import React from 'react'
-import {db} from '../../Services/Firebase';
+import React, {useContext} from 'react'
+import {update} from '../../Services/Firebase';
+import {TodoContext} from '../../Context/TodoContext';
 
  function Todo({todo, header=false}) {
-   const {id, detail, status } = todo;
 
-  const handleClick = (id) => {
+   const {id, detail, status } = todo;
+   const {id:idContext, setId, todo:todoContext, setEdit, setTodo} = useContext(TodoContext);
+
+  const handleClickChecked = (id) => {
       if(status){
-       
-        db.collection('todo').doc(id).update({
+        update( id, {
           status: false
         });
       }else{
-       
-        db.collection('todo').doc(id).update({
+        update( id, {
           status: true
         });
       }
@@ -20,18 +21,32 @@ import {db} from '../../Services/Firebase';
   }
 
   const handleClickDelete = (id) => {
-    
-    db.collection('todo').doc(id).update({
-      delete: true
+    update( id, {
+      delete: true,
+      status: false
     });
+    setEdit(false);
+    setId('');
+    setTodo({...todoContext, detail:''});
   }
 
   const handleClickActive = (id) => {
-    
-    db.collection('todo').doc(id).update({
+    update( id, {
       delete: false
     });
 }
+
+  const handleClickEdit = (id, detail) => {
+    if(id === idContext){
+      setEdit(false);
+      setId('');
+      setTodo({...todoContext, detail:''});
+    }else{
+      setEdit(true);
+      setId(id);
+      setTodo({...todoContext, detail:detail});
+    }
+  }
 
 
   return (
@@ -39,12 +54,12 @@ import {db} from '../../Services/Firebase';
       { header ?
         (
         <div  className="main__row main__row--header" >
-         
-          <label onClick={() => handleClick(todo.id)} className="main__row-label" htmlFor={todo.id}>
+          <label onClick={() => handleClickChecked(id)} className="main__row-label" htmlFor={id}>
             <div className={status ? "main__row-checkbox-personalizado-checked" :"main__row-checkbox-personalizado"}></div>
-            <p>{todo.detail}</p>
+            <p className={status ? "main__row-p-through" : "main__row-p"}>{detail}</p>
           </label>
           <div>
+          {todo.delete === false && <svg onClick={() => handleClickEdit(id, detail)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M18.363 8.464l1.433 1.431-12.67 12.669-7.125 1.436 1.439-7.127 12.665-12.668 1.431 1.431-12.255 12.224-.726 3.584 3.584-.723 12.224-12.257zm-.056-8.464l-2.815 2.817 5.691 5.692 2.817-2.821-5.693-5.688zm-12.318 18.718l11.313-11.316-.705-.707-11.313 11.314.705.709z"/></svg>}
           {todo.delete ?
             (<svg onClick={() => handleClickActive(id)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>)
             :
@@ -57,12 +72,12 @@ import {db} from '../../Services/Firebase';
       :
       (
         <div className="main__row" >
-          
-          <label onClick={() => handleClick(id)} className="main__row-label" htmlFor={id} >
+          <label onClick={() => handleClickChecked(id)} className="main__row-label" htmlFor={id} >
             <div className={status ? "main__row-checkbox-personalizado-checked" :"main__row-checkbox-personalizado"}></div>
-            <p>{detail}</p>
+            <p className={status ? "main__row-p-through" : "main__row-p"}>{detail}</p>
           </label>
           <div>
+          {todo.delete === false && <svg onClick={() => handleClickEdit(id, detail)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M18.363 8.464l1.433 1.431-12.67 12.669-7.125 1.436 1.439-7.127 12.665-12.668 1.431 1.431-12.255 12.224-.726 3.584 3.584-.723 12.224-12.257zm-.056-8.464l-2.815 2.817 5.691 5.692 2.817-2.821-5.693-5.688zm-12.318 18.718l11.313-11.316-.705-.707-11.313 11.314.705.709z"/></svg>}
           {todo.delete ?
             (<svg onClick={() => handleClickActive(id)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>)
             :

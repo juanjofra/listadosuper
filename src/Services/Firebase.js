@@ -1,28 +1,34 @@
-// Firebase App (the core Firebase SDK) is always required and
-// must be listed before other Firebase SDKs
-import firebase from "firebase/app";
+import {db} from './FirebaseConfig';
 
-// Add the Firebase services that you want to use
-import "firebase/auth";
-import "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAmxLPQJP-B1Hdff4c5hWnWYoXPF_o_lPs",
-  authDomain: "listadosuper-6cfce.firebaseapp.com",
-  projectId: "listadosuper-6cfce",
-  storageBucket: "listadosuper-6cfce.appspot.com",
-  messagingSenderId: "912098335718",
-  appId: "1:912098335718:web:25e25a298e109827855427",
-  measurementId: "G-1CPKXVG1JH"
-};
+export function update(id, odjeto) {
+    db.collection('todo').doc(id).update({...odjeto});
+}
 
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+export const getListTodoWithWhere = (condition, callback) => {
+  return db.collection('todo')
+  .where('delete','==',condition)
+  .limit(10).orderBy('status')
+  .onSnapshot(snap => {
+   const todos = snap.docs.map(doc => {
+      const data = doc.data();
+      const id = doc.id;
+      return {
+        ...data,
+        id
+      }
+      });
+      callback(todos);
+    });
+}
 
-// Initialize Firebase
-const db = firebase.firestore();
 
-export {
-  db
+export const addTodo = (todo) => {
+  db.collection("todo").
+  add(todo).then((e) => {
+      console.log("Document successfully written!");
+  })
+  .catch((error) => {
+      console.error("Error writing document: ", error);
+  });
 }

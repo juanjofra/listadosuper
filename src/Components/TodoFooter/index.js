@@ -1,6 +1,7 @@
 import React from 'react'
+import { db } from '../../Services/FirebaseConfig';
 
-export default function TodoFooter({setTodoActivo}) {
+export default function TodoFooter({setTodoActivo, todoActivo, listTodoActivos}) {
 
   const handleActive = () => {
     setTodoActivo(true);
@@ -8,6 +9,14 @@ export default function TodoFooter({setTodoActivo}) {
 
   const handleCompleted = () => {
     setTodoActivo(false);
+  }
+
+  const handleClearCompleted = () => {
+    listTodoActivos.forEach(todo => {
+      db.collection('todo').doc(todo.id).update({
+        status: false
+      });
+    });
   }
 
   return (
@@ -22,7 +31,8 @@ export default function TodoFooter({setTodoActivo}) {
     </div>
 
     <div className="main__row-items-footer">
-      <span className="main__row-span-footer">Clear Completed</span>
+      {todoActivo ? <span onClick={handleClearCompleted} className="main__row-span-footer">Clear Completed</span> : false}
+      
     </div>
   </div>
   )
